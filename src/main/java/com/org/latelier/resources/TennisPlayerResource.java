@@ -1,28 +1,53 @@
 package com.org.latelier.resources;
 
 import com.org.latelier.models.PlayersResponseEntity;
-import com.org.latelier.models.TennisPlayer;
+import com.org.latelier.models.TennisStats;
+import com.org.latelier.models.entities.TennisPlayerEntity;
+import com.org.latelier.services.TennisPlayersService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 
-@RestController("")
+
+@RestController
 public class TennisPlayerResource {
 
-    @GetMapping(value = "/players")
-    public PlayersResponseEntity getAllTennisPlayers() {
-        String uri = "https://data.latelier.co/training/tennis_stats/headtohead.json";
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<?> request = new HttpEntity<>(requestHeaders);
+    private final TennisPlayersService tennisPlayersService;
 
-//        return restTemplate.exchange(uri, HttpMethod.GET, request, TennisPlayer[].class);
-//        return restTemplate.getForObject(uri, TennisPlayer[].class);
-        ResponseEntity<PlayersResponseEntity> responseEntity = restTemplate.getForEntity(uri, PlayersResponseEntity.class);
+    @Value("${latelier.api.uri}")
+    private String apiUri;
+
+    @Autowired
+    public TennisPlayerResource(TennisPlayersService tennisPlayersService) {
+        this.tennisPlayersService = tennisPlayersService;
+    }
+
+    @GetMapping(value = "/players")
+    public PlayersResponseEntity getAllTennisPlayersFromExternalApi() {
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<PlayersResponseEntity> responseEntity = restTemplate.getForEntity(apiUri, PlayersResponseEntity.class);
         return responseEntity.getBody();
+    }
+
+    @GetMapping("/players/ordered")
+    public List<TennisPlayerEntity> getAllTennisPlayersFromDbOrdered() {
+        return tennisPlayersService.findAllTennisPlayersOrdered();
+    }
+
+    @GetMapping("/player/{id}")
+    public TennisPlayerEntity getTennisPlayerById(@PathVariable Long id) {
+        return tennisPlayersService.findTennisPlayerById(id);
+    }
+
+    @GetMapping("/stats")
+    public TennisStats getTennisStats() {
+        return tennisPlayersService.assembleTennisStats();
     }
 
 }

@@ -1,11 +1,27 @@
 package com.org.latelier.models;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Embeddable;
 
-@Getter
-@Setter
+@Embeddable
 public class Country {
-    String picture;
+    @JsonProperty("picture")
+    String countryPicture;
     String code;
+
+    public String getCountryPicture() {
+        return countryPicture;
+    }
+
+    public void setCountryPicture(String countryPicture) {
+        this.countryPicture = countryPicture;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 }

@@ -1,27 +1,31 @@
-package com.org.latelier.models;
+package com.org.latelier.models.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.org.latelier.models.Country;
+import com.org.latelier.models.PlayerData;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
-public class TennisPlayer {
-
+@Entity
+public class TennisPlayerEntity {
+    @Id
     long id;
-    @JsonProperty("firstname")
     String firstName;
-    @JsonProperty("lastname")
     String lastName;
-    @JsonProperty("shortname")
     String shortName;
     String sex;
     String picture;
+    @Embedded
     Country country;
+    @Embedded
     PlayerData data;
 
-    public long getId() {
-        return id;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public Long getId() {
+        return id;
     }
 
     public String getFirstName() {

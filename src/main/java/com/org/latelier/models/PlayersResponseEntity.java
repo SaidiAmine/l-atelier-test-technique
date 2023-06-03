@@ -1,11 +1,15 @@
 package com.org.latelier.models;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.List;
 
-@Getter @Setter
 public class PlayersResponseEntity {
     List<TennisPlayer> players;
+
+    public List<TennisPlayer> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<TennisPlayer> players) {
+        this.players = players;
+    }
 }
