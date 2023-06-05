@@ -9,7 +9,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.List;
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-// explicitly provide the injection strategy to retrive this mapper
+// explicitly provide the injection strategy to retrieve this mapper
 public interface TennisPlayerMapper {
     TennisPlayerMapper INSTANCE = Mappers.getMapper(TennisPlayerMapper.class);
 

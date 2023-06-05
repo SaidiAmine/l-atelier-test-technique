@@ -1,8 +1,6 @@
 package com.org.latelier.resources;
 
-import com.org.latelier.models.PlayersResponseEntity;
-import com.org.latelier.models.TennisStats;
-import com.org.latelier.models.entities.TennisPlayerEntity;
+import com.org.latelier.models.api.response.TennisPlayersResponse;
 import com.org.latelier.services.TennisPlayersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 
 @RestController
@@ -29,25 +25,25 @@ public class TennisPlayerResource {
     }
 
     @GetMapping(value = "/players")
-    public PlayersResponseEntity getAllTennisPlayersFromExternalApi() {
+    public ResponseEntity<TennisPlayersResponse> getAllTennisPlayersFromExternalApi() {
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<PlayersResponseEntity> responseEntity = restTemplate.getForEntity(apiUri, PlayersResponseEntity.class);
-        return responseEntity.getBody();
+        ResponseEntity<TennisPlayersResponse> responseEntity = restTemplate.getForEntity(apiUri, TennisPlayersResponse.class);
+        return ResponseEntity.ok(responseEntity.getBody());
     }
 
     @GetMapping("/players/ordered")
-    public List<TennisPlayerEntity> getAllTennisPlayersFromDbOrdered() {
-        return tennisPlayersService.findAllTennisPlayersOrdered();
+    public ResponseEntity<Object> getAllTennisPlayersFromDbOrdered() {
+        return ResponseEntity.ok(tennisPlayersService.findAllTennisPlayersOrdered());
     }
 
     @GetMapping("/player/{id}")
-    public TennisPlayerEntity getTennisPlayerById(@PathVariable Long id) {
-        return tennisPlayersService.findTennisPlayerById(id);
+    public ResponseEntity<Object> getTennisPlayerById(@PathVariable Long id) {
+        return ResponseEntity.ok(tennisPlayersService.findTennisPlayerById(id));
     }
 
     @GetMapping("/stats")
-    public TennisStats getTennisStats() {
-        return tennisPlayersService.assembleTennisStats();
+    public ResponseEntity<Object> getTennisStats() {
+        return ResponseEntity.ok(tennisPlayersService.assembleTennisStats());
     }
 
 }

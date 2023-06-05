@@ -1,6 +1,6 @@
 package com.org.latelier.resources;
 
-import com.org.latelier.exceptions.ApiErrorResponse;
+import com.org.latelier.models.api.response.ApiErrorResponse;
 import com.org.latelier.exceptions.EntityNotFoundException;
 import com.org.latelier.exceptions.ExternalApiCallException;
 import org.springframework.http.HttpHeaders;

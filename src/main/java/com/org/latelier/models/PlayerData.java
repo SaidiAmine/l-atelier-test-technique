@@ -15,6 +15,19 @@ public class PlayerData {
     int age;
     List<Integer> last;
 
+    public PlayerData(long rank, long points, float weight, float height, int age, List<Integer> last) {
+        this.rank = rank;
+        this.points = points;
+        this.weight = weight;
+        this.height = height;
+        this.age = age;
+        this.last = last;
+    }
+
+    public PlayerData() {
+
+    }
+
     public long getRank() {
         return rank;
     }

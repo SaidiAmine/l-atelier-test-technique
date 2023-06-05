@@ -1,4 +1,4 @@
-package com.org.latelier.models;
+package com.org.latelier.models.api.response;
 
 public class TennisStats {
     float heightMedian;

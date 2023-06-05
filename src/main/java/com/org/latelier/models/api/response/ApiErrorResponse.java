@@ -1,4 +1,4 @@
-package com.org.latelier.exceptions;
+package com.org.latelier.models.api.response;
 
 import org.springframework.http.HttpStatus;
 

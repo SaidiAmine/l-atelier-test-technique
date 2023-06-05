@@ -20,6 +20,21 @@ public class TennisPlayerEntity {
     @Embedded
     PlayerData data;
 
+    public TennisPlayerEntity() {
+
+    }
+
+    public TennisPlayerEntity(long id, String firstName, String lastName, String shortName, String sex, String picture, Country country, PlayerData data) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.shortName = shortName;
+        this.sex = sex;
+        this.picture = picture;
+        this.country = country;
+        this.data = data;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }

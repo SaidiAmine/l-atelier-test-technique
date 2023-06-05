@@ -4,6 +4,9 @@ import com.org.latelier.application.TennisPlayerMapper;
 import com.org.latelier.exceptions.EntityNotFoundException;
 import com.org.latelier.exceptions.ExternalApiCallException;
 import com.org.latelier.models.*;
+import com.org.latelier.models.api.response.CountryRatio;
+import com.org.latelier.models.api.response.TennisPlayersResponse;
+import com.org.latelier.models.api.response.TennisStats;
 import com.org.latelier.models.entities.TennisPlayerEntity;
 import com.org.latelier.repository.TennisPlayerRepository;
 import com.org.latelier.services.TennisPlayersService;
@@ -33,9 +36,9 @@ public class TennisPlayersServiceImpl implements TennisPlayersService {
     }
 
 
-    private PlayersResponseEntity fetchPlayersFromExternalApi() {
+    private TennisPlayersResponse fetchPlayersFromExternalApi() {
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<PlayersResponseEntity> responseEntity = restTemplate.getForEntity(apiUri, PlayersResponseEntity.class);
+        ResponseEntity<TennisPlayersResponse> responseEntity = restTemplate.getForEntity(apiUri, TennisPlayersResponse.class);
         if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.hasBody()) {
             return responseEntity.getBody();
         } else throw new ExternalApiCallException("An error occurred while loading data from external api.");
@@ -43,9 +46,9 @@ public class TennisPlayersServiceImpl implements TennisPlayersService {
 
     @Override
     public void saveTennisPlayers() {
-        PlayersResponseEntity playersResponseEntity = fetchPlayersFromExternalApi();
-        if (playersResponseEntity != null && !playersResponseEntity.getPlayers().isEmpty()) {
-            List<TennisPlayer> tennisPlayers = playersResponseEntity.getPlayers();
+        TennisPlayersResponse tennisPlayersResponse = fetchPlayersFromExternalApi();
+        if (tennisPlayersResponse != null && !tennisPlayersResponse.getPlayers().isEmpty()) {
+            List<TennisPlayer> tennisPlayers = tennisPlayersResponse.getPlayers();
             List<TennisPlayerEntity> tennisPlayersEntities = tennisPlayerMapper.map(tennisPlayers);
             repository.saveAll(tennisPlayersEntities);
         }
@@ -63,19 +66,17 @@ public class TennisPlayersServiceImpl implements TennisPlayersService {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Couldn't find entity with id %d", id)));
     }
 
-    public float calculateAverageIMC() {
-        List<TennisPlayerEntity> tennisPlayerEntities = repository.findAll();
+    public float calculateAverageIMC(List<TennisPlayerEntity> entities) {
         float totalIMC = 0f;
-        for (TennisPlayerEntity player : tennisPlayerEntities) {
+        for (TennisPlayerEntity player : entities) {
             float imc = (player.getData().getWeight() / 1000) / ((player.getData().getHeight() / 100) * (player.getData().getHeight() / 100));
             totalIMC += imc;
         }
-        return totalIMC / tennisPlayerEntities.size();
+        return totalIMC / entities.size();
     }
 
-    public float heightMedian() {
+    public float heightMedian(List<TennisPlayerEntity> entities) {
         float heightMedian;
-        List<TennisPlayerEntity> entities = repository.findAll();
         List<Float> heightList = entities.stream().map(TennisPlayerEntity::getData)
                 .map(PlayerData::getHeight)
                 .sorted().collect(Collectors.toList());
@@ -90,8 +91,7 @@ public class TennisPlayersServiceImpl implements TennisPlayersService {
         return heightMedian;
     }
 
-    public CountryRatio topCountryWithWinningRation() {
-        List<TennisPlayerEntity> entities = repository.findAll();
+    public CountryRatio topCountryWithWinningRatio(List<TennisPlayerEntity> entities) {
         CountryRatio countryRatio = new CountryRatio();
         for (TennisPlayerEntity tennisPlayer : entities) {
             int countryScore = tennisPlayer.getData().getLast().stream().reduce(Integer::sum).orElse(0);
@@ -106,9 +106,10 @@ public class TennisPlayersServiceImpl implements TennisPlayersService {
     @Override
     public TennisStats assembleTennisStats() {
         TennisStats tennisStats = new TennisStats();
-        tennisStats.setAverageIMC(calculateAverageIMC());
-        tennisStats.setHeightMedian(heightMedian());
-        tennisStats.setCountryRatio(topCountryWithWinningRation());
+        List<TennisPlayerEntity> entities = repository.findAll();
+        tennisStats.setAverageIMC(calculateAverageIMC(entities));
+        tennisStats.setHeightMedian(heightMedian(entities));
+        tennisStats.setCountryRatio(topCountryWithWinningRatio(entities));
         return tennisStats;
     }
 }

@@ -9,6 +9,15 @@ public class Country {
     String countryPicture;
     String code;
 
+    public Country(String countryPicture, String code) {
+        this.countryPicture = countryPicture;
+        this.code = code;
+    }
+
+    public Country() {
+
+    }
+
     public String getCountryPicture() {
         return countryPicture;
     }
